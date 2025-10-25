@@ -1,0 +1,43 @@
+body {
+  font-family: sans-serif;
+  background-color: #f1f2f6;
+  color: #2C3A47;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #1B9CFC;
+}
+
+header {
+    background-color: #B33771;
+    padding: 5rem 1rem;
+    color: white;
+}
+
+header > h1 {
+    margin: 5rem 0;
+    font-size: 5rem;
+    text-align: center;
+}
+
+header > h2 {
+    max-width: 400px;
+    margin: 5rem auto;
+    font-size: 1.25rem;
+    font-weight: lighter;
+    text-align: center;
+}
+
+section {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+section > h3 {
+    font-weight: lighter;
+    font-size: 2rem;
+}
