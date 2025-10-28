@@ -16,7 +16,7 @@ O objetivo é explorar ao máximo o potencial dos trackers públicos; por isso u
 
 O [Prowlarr](https://prowlarr.com/) é um indexador de torrents e usenet que atua como central de busca e integração para o Radarr, Sonarr e outros aplicativos similares, facilitando o gerenciamento e a automação de downloads.
 
-### Iniciando o serviço com o Docker
+### Configurando o container com Docker Compose
 
 Iniciaremos criando o arquivo `docker-compose.yml`, responsável por definir e configurar todos os serviços da stack.
 
@@ -113,3 +113,106 @@ Ao fechar o modal de busca de indexadores, você volta à listagem principal, on
 A partir de agora, você já pode realizar buscas diretamente no Prowlarr e integrá-lo com outros serviços, como o Sonarr e o Radarr.
 
 ![Prowlarr: Busca](./imgs/06-prowlarr-search.png)
+
+## Radarr
+
+O [Radarr](https://radarr.video/) é uma ferramenta que automatiza o download, organização e gerenciamento de filmes, integrando-se a indexadores e clientes de torrent ou usenet.
+
+### Configurando o container com Docker Compose
+
+Para adicionar o **Radarr** à stack, basta incluir o serviço e o volume correspondentes no arquivo `docker-compose.yml`.
+
+```yml
+services:
+  prowlarr:
+    ...
+
+  # Adicione esse bloco
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    ports:
+      - "7878:7878"
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - radarr-config:/config
+
+volumes:
+  ...
+  # Lembre de adicionar o volume também
+  radarr-config: {}
+
+```
+
+Inicie o Radarr executando novamente a stack com Docker Compose:
+
+```sh
+docker-compose up
+# ou
+docker compose up
+```
+
+Aguarde o serviço inicializar e acesse a interface web do Radarr pelo endereço [http://localhost:7878](http://localhost:7878/).
+
+### Primeiras configurações
+
+No primeiro acesso, o Radarr solicitará que você configure o método de autenticação, de forma semelhante ao Prowlarr. Recomenda-se utilizar a opção **Forms (Login Page)**.
+
+![Radarr: Configurando a autenticação](./imgs/07-radarr-authentication-config.png)
+
+Após salvar, você será direcionado à tela inicial, onde será exibida a listagem de filmes adicionados — que, neste primeiro acesso, estará vazia, mostrando um botão em destaque para adicionar o primeiro filme.
+
+![Radarr: Tela inicial](./imgs/08-radarr-inital-page.png)
+
+### Configurando o cliente Torrent
+
+O **Radarr** não é um cliente de torrent — para realizar os downloads, é necessário integrá-lo a um cliente compatível.
+
+Navegue pela barra lateral até *Settings → Download Clients*.
+
+![Radarr: Download Clients](./imgs/09-radarr-download-clients.png)
+
+Clique em *“+”* para visualizar a lista de clientes suportados e configure aquele que você utiliza.
+
+![Radarr: Adicionar Download Client](./imgs/10-radarr-add-download-client.png)
+
+### Conectando o Radarr e Prowlarr
+
+A configuração mais importante no **Radarr** é a dos **indexers**. No entanto, vamos delegar essa função ao **Prowlarr**, que será o nosso gerenciador central de indexers.
+
+Agora, volte ao **Prowlarr** em [localhost:9696](http://localhost:9696/) e navegue pela barra lateral até *Settings >> Apps*.
+
+![Prowlarr: Aplicativos](./imgs/11-prowlarr-apps.png)
+
+Clique em *“+”* e, em seguida, selecione **Radarr**.
+
+Para configurar o Radarr, preencha os campos da seguinte forma:
+
+- **Prowlarr Server:** `http://prowlarr:9696`
+- **Radarr Server:** `http://radarr:7878`
+
+> ⚠️ **Atenção:** Esses endereços são válidos apenas no contexto deste guia, utilizando o Docker Compose.
+
+![Prowlarr: Adicionar Radarr](./imgs/12-prowlarr-add-radarr.png)
+
+Note que, para finalizar a configuração, é obrigatório informar o campo **API Key**.
+
+Essa chave pode ser encontrada no próprio Radarr: acesse [localhost:7878](http://localhost:7878/), navegue até *Settings >> General*, e na seção **Security** você verá a chave de API.
+
+![Radarr: Recuperando a API Key](./imgs/13-radarr-security.png)
+
+Copie a chave e cole no campo correspondente no Prowlarr.
+
+Em seguida, clique em *Test* e depois em *Save*.
+
+![Prowlarr: Testar e salvar Radarr](./imgs/14-prowlarr-test-radarr.png)
+
+Por fim, clique em *Sync App Indexers* na barra superior para que o Prowlarr adicione automaticamente seus indexers ao Radarr.
+
+![Prowlarr: Sync App Indexers](./imgs/15-prowlarr-sync-app.png)
+
+Voltando ao **Radarr** em [localhost:7878](http://localhost:7878/), navegue pela barra lateral até *Settings >> Indexers*.
+
+Agora, você verá o **Catálogo BeTor** listado como um dos indexers disponíveis.
+
+![Radarr: Indexers](./imgs/16-radarr-indexers.png)
