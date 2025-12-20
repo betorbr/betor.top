@@ -13,8 +13,21 @@ a {
 
 header {
     background-color: #B33771;
-    padding: 5rem 1rem;
+    padding: 0 1rem 5rem;
     color: white;
+}
+
+header > .nav {
+  padding: 1rem 0;
+  text-align: right;
+}
+
+header > .nav > a {
+  display: inline-block;
+}
+
+header > .nav > a > img {
+  height: 2rem;
 }
 
 header > h1 {
